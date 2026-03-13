@@ -29,3 +29,7 @@ Fuer das MVP wird der schnellste robuste Login-Weg ueber einen Credentials-Provi
 ### D-007: Oeffentliche Preview und geschuetzte Portale parallel
 
 Die oeffentlichen Vorschauseiten unter `/manager` und `/mieter` bleiben fuer Marketing und Demo erhalten, waehrend die echten Portale unter `/portal/*` durch Rollen und Login geschuetzt werden. So bleibt die Online-Demo ohne Cloud-DB nutzbar, waehrend lokal bereits echte Portalfluesse getestet werden koennen.
+
+### D-008: Manager-Schreibfluesse ueber geschuetzte App-API plus Service-Schicht
+
+Die Manager-Mutationen laufen ueber geschuetzte App-API-Routen, die Auth, Zod-Validierung und eine dedizierte Service-Schicht kombinieren. So bleiben Prisma-Operationen testbar, atomare Snapshot-Veröffentlichungen sind transaktional kapselbar und das Client-Dashboard kann mit TanStack Query sauber invalidieren.

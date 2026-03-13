@@ -13,5 +13,10 @@ test("manager can sign in and reach the protected portal", async ({ page }) => {
       name: /manager-portal/i,
     }),
   ).toBeVisible();
-  await expect(page.getByText(/lindenhof mitte/i)).toBeVisible();
+  await expect(
+    page
+      .locator("p")
+      .filter({ hasText: /lindenhof mitte/i })
+      .first(),
+  ).toBeVisible();
 });

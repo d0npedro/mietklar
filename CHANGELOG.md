@@ -4,6 +4,14 @@
 
 - Vorbereitung der MVP-Phasen 4 bis 6.
 
+## 0.1.0-alpha.4 - 2026-03-13
+
+- Manager-Portal auf echte TanStack-Query- und API-basierte Datenfluesse umgestellt.
+- Geschuetzte Manager-API-Routen fuer Objekte, Einheiten, Lease-Updates, Kostenpositionen, Snapshot-Publishing und Servicefall-Status angelegt.
+- Service- und Zugriffslogik fuer Manager-Flows mit Audit-Log und Notification-Erzeugung eingefuehrt.
+- Unit-Tests fuer Rollen-/Sichtbarkeitsregeln sowie Manager-Service-Flows ergaenzt.
+- Manager-Playwright-Flow auf das neue Portal-Dashboard angepasst.
+
 ## 0.1.0-alpha.3 - 2026-03-13
 
 - Credentials-Login mit Auth.js, NextAuth-Route-Handler und JWT-Session-Strategie implementiert.

@@ -1,6 +1,11 @@
 import { Prisma, Role, SnapshotStatus } from "@prisma/client";
 
+import { canViewDocument } from "@/lib/domain/access";
 import { getDb } from "@/lib/db";
+import {
+  getManagerScope,
+  getPropertyFilter,
+} from "@/lib/server/manager-service";
 
 function asNumber(value: Prisma.Decimal | number | null | undefined) {
   if (typeof value === "number") {
@@ -10,97 +15,335 @@ function asNumber(value: Prisma.Decimal | number | null | undefined) {
   return value ? value.toNumber() : 0;
 }
 
-export async function getManagerPortalData(userId: string) {
-  const db = getDb();
-  const membership = await db.organizationMember.findFirst({
-    include: {
-      organization: true,
-    },
-    orderBy: { createdAt: "asc" },
-    where: {
-      role: {
-        in: [Role.org_owner, Role.org_manager, Role.property_manager],
-      },
-      userId,
-    },
-  });
+export type ManagerPortalData = {
+  activeLeaseCount: number;
+  auditEntries: Array<{
+    action: string;
+    createdAt: string;
+    entityType: string;
+    id: string;
+    summary: string;
+  }>;
+  changeReasons: Array<{
+    code: string;
+    id: string;
+    label: string;
+  }>;
+  costCategories: Array<{
+    id: string;
+    isExternal: boolean;
+    key: string;
+    name: string;
+  }>;
+  leases: Array<{
+    billingDay: number;
+    costItems: Array<{
+      amount: number;
+      categoryName: string;
+      effectiveFrom: string;
+      effectiveTo: string | null;
+      id: string;
+      isExternal: boolean;
+      label: string;
+    }>;
+    id: string;
+    marginType: string;
+    marginValue: number;
+    notes: string | null;
+    propertyId: string;
+    propertyName: string;
+    recentChanges: Array<{
+      deltaAmount: number;
+      effectiveDate: string;
+      id: string;
+      reasonLabel: string;
+      title: string;
+    }>;
+    reference: string;
+    snapshots: Array<{
+      costTotal: number;
+      effectiveDate: string;
+      id: string;
+      marginAmount: number;
+      publishedAt: string | null;
+      rentTotal: number;
+      version: number;
+    }>;
+    status: string;
+    tenantNames: string[];
+    unitCode: string;
+  }>;
+  openServiceCaseCount: number;
+  organizationId: string;
+  organizationName: string;
+  properties: Array<{
+    activeLeaseCount: number;
+    addressLine1: string;
+    city: string;
+    code: string;
+    id: string;
+    name: string;
+    postalCode: string;
+    unitCount: number;
+    units: Array<{
+      activeLeaseReference: string | null;
+      areaSqm: number;
+      code: string;
+      floor: string | null;
+      id: string;
+      roomCount: number | null;
+    }>;
+  }>;
+  propertyCount: number;
+  serviceCases: Array<{
+    assignedToName: string | null;
+    caseNumber: string;
+    createdAt: string;
+    id: string;
+    priority: string;
+    propertyName: string;
+    status: string;
+    title: string;
+    unitCode: string;
+  }>;
+  unitCount: number;
+};
 
-  if (!membership) {
+export async function getManagerPortalData(
+  userId: string,
+): Promise<ManagerPortalData | null> {
+  const db = getDb();
+  const scope = await getManagerScope(userId, db);
+
+  if (!scope) {
     return null;
   }
 
   const [
+    organization,
     propertyCount,
     unitCount,
     activeLeaseCount,
     openServiceCaseCount,
-    recentChanges,
-    featuredLease,
+    properties,
+    leases,
+    serviceCases,
+    costCategories,
+    changeReasons,
+    auditEntries,
   ] = await Promise.all([
+    db.organization.findUnique({
+      select: { id: true, name: true },
+      where: { id: scope.organizationId },
+    }),
     db.property.count({
-      where: { organizationId: membership.organizationId },
+      where: getPropertyFilter(scope),
     }),
     db.unit.count({
-      where: { property: { organizationId: membership.organizationId } },
+      where: { property: getPropertyFilter(scope) },
     }),
     db.lease.count({
       where: {
-        organizationId: membership.organizationId,
+        organizationId: scope.organizationId,
+        ...(scope.role === Role.property_manager
+          ? { propertyId: { in: scope.assignedPropertyIds } }
+          : {}),
         status: { in: ["active", "notice"] },
       },
     }),
     db.serviceCase.count({
       where: {
-        organizationId: membership.organizationId,
+        organizationId: scope.organizationId,
+        ...(scope.role === Role.property_manager
+          ? { propertyId: { in: scope.assignedPropertyIds } }
+          : {}),
         status: { in: ["open", "in_progress", "waiting_vendor"] },
       },
     }),
-    db.leaseChange.findMany({
+    db.property.findMany({
       include: {
-        lease: {
-          include: { unit: true },
+        leases: {
+          select: { id: true },
+          where: { status: { in: ["active", "notice"] } },
         },
-        reason: true,
+        units: {
+          include: {
+            leases: {
+              orderBy: { startDate: "desc" },
+              select: { reference: true },
+              take: 1,
+              where: { status: { in: ["active", "notice"] } },
+            },
+          },
+          orderBy: { code: "asc" },
+        },
       },
-      orderBy: { publishedAt: "desc" },
-      take: 3,
-      where: { organizationId: membership.organizationId },
+      orderBy: { name: "asc" },
+      where: getPropertyFilter(scope),
     }),
-    db.lease.findFirst({
+    db.lease.findMany({
       include: {
+        changes: {
+          include: { reason: true },
+          orderBy: { publishedAt: "desc" },
+          take: 3,
+        },
+        costItems: {
+          include: { costCategory: true },
+          orderBy: [{ effectiveFrom: "desc" }, { createdAt: "desc" }],
+        },
         property: true,
         snapshots: {
           orderBy: { version: "desc" },
-          take: 1,
+          take: 3,
           where: { status: SnapshotStatus.published },
+        },
+        tenants: {
+          include: { user: true },
+          orderBy: { createdAt: "asc" },
+          where: { moveOutDate: null },
         },
         unit: true,
       },
-      orderBy: { startDate: "asc" },
-      where: { organizationId: membership.organizationId },
+      orderBy: [{ startDate: "desc" }, { reference: "asc" }],
+      where: {
+        organizationId: scope.organizationId,
+        ...(scope.role === Role.property_manager
+          ? { propertyId: { in: scope.assignedPropertyIds } }
+          : {}),
+      },
+    }),
+    db.serviceCase.findMany({
+      include: {
+        assignedTo: {
+          select: { name: true },
+        },
+        property: {
+          select: { name: true },
+        },
+        unit: {
+          select: { code: true },
+        },
+      },
+      orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+      take: 10,
+      where: {
+        organizationId: scope.organizationId,
+        ...(scope.role === Role.property_manager
+          ? { propertyId: { in: scope.assignedPropertyIds } }
+          : {}),
+      },
+    }),
+    db.costCategory.findMany({
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      where: { organizationId: scope.organizationId },
+    }),
+    db.leaseChangeReason.findMany({
+      orderBy: { label: "asc" },
+      where: { organizationId: scope.organizationId },
+    }),
+    db.auditLog.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 8,
+      where: {
+        organizationId: scope.organizationId,
+        ...(scope.role === Role.property_manager
+          ? { propertyId: { in: scope.assignedPropertyIds } }
+          : {}),
+      },
     }),
   ]);
 
   return {
     activeLeaseCount,
-    featuredLease: featuredLease
-      ? {
-          propertyName: featuredLease.property.name,
-          rentTotal: asNumber(featuredLease.snapshots[0]?.rentTotal),
-          unitCode: featuredLease.unit.code,
-        }
-      : null,
+    auditEntries: auditEntries.map((entry) => ({
+      action: entry.action,
+      createdAt: entry.createdAt.toISOString(),
+      entityType: entry.entityType,
+      id: entry.id,
+      summary: entry.summary,
+    })),
+    changeReasons: changeReasons.map((reason) => ({
+      code: reason.code,
+      id: reason.id,
+      label: reason.label,
+    })),
+    costCategories: costCategories.map((category) => ({
+      id: category.id,
+      isExternal: category.isExternal,
+      key: category.key,
+      name: category.name,
+    })),
+    leases: leases.map((lease) => ({
+      billingDay: lease.billingDay,
+      costItems: lease.costItems.map((item) => ({
+        amount: asNumber(item.amount),
+        categoryName: item.costCategory.name,
+        effectiveFrom: item.effectiveFrom.toISOString(),
+        effectiveTo: item.effectiveTo?.toISOString() ?? null,
+        id: item.id,
+        isExternal: item.isExternal,
+        label: item.label,
+      })),
+      id: lease.id,
+      marginType: lease.marginType,
+      marginValue: asNumber(lease.marginValue),
+      notes: lease.notes,
+      propertyId: lease.propertyId,
+      propertyName: lease.property.name,
+      recentChanges: lease.changes.map((change) => ({
+        deltaAmount: asNumber(change.deltaAmount),
+        effectiveDate: change.effectiveDate.toISOString(),
+        id: change.id,
+        reasonLabel: change.reason.label,
+        title: change.title,
+      })),
+      reference: lease.reference,
+      snapshots: lease.snapshots.map((snapshot) => ({
+        costTotal: asNumber(snapshot.costTotal),
+        effectiveDate: snapshot.effectiveDate.toISOString(),
+        id: snapshot.id,
+        marginAmount: asNumber(snapshot.marginAmount),
+        publishedAt: snapshot.publishedAt?.toISOString() ?? null,
+        rentTotal: asNumber(snapshot.rentTotal),
+        version: snapshot.version,
+      })),
+      status: lease.status,
+      tenantNames: lease.tenants.map((tenant) => tenant.user.name),
+      unitCode: lease.unit.code,
+    })),
     openServiceCaseCount,
-    organizationName: membership.organization.name,
+    organizationId: scope.organizationId,
+    organizationName: organization?.name ?? "MietKlar Demo GmbH",
+    properties: properties.map((property) => ({
+      activeLeaseCount: property.leases.length,
+      addressLine1: property.addressLine1,
+      city: property.city,
+      code: property.code,
+      id: property.id,
+      name: property.name,
+      postalCode: property.postalCode,
+      unitCount: property.units.length,
+      units: property.units.map((unit) => ({
+        activeLeaseReference: unit.leases[0]?.reference ?? null,
+        areaSqm: asNumber(unit.areaSqm),
+        code: unit.code,
+        floor: unit.floor,
+        id: unit.id,
+        roomCount: unit.roomCount,
+      })),
+    })),
     propertyCount,
-    recentChanges: recentChanges.map((change) => ({
-      deltaAmount: asNumber(change.deltaAmount),
-      effectiveDate: change.effectiveDate,
-      id: change.id,
-      leaseReference: change.lease.reference,
-      reasonLabel: change.reason.label,
-      title: change.title,
-      unitCode: change.lease.unit.code,
+    serviceCases: serviceCases.map((serviceCase) => ({
+      assignedToName: serviceCase.assignedTo?.name ?? null,
+      caseNumber: serviceCase.caseNumber,
+      createdAt: serviceCase.createdAt.toISOString(),
+      id: serviceCase.id,
+      priority: serviceCase.priority,
+      propertyName: serviceCase.property.name,
+      status: serviceCase.status,
+      title: serviceCase.title,
+      unitCode: serviceCase.unit.code,
     })),
     unitCount,
   };
@@ -125,9 +368,6 @@ export async function getTenantPortalData(userId: string) {
             include: { file: true },
             orderBy: { publishedAt: "desc" },
             take: 3,
-            where: {
-              visibility: { in: ["tenant", "public"] },
-            },
           },
           organization: true,
           property: true,
@@ -181,12 +421,20 @@ export async function getTenantPortalData(userId: string) {
       reasonLabel: change.reason.label,
       title: change.title,
     })),
-    documents: tenancy.lease.documents.map((document) => ({
-      fileName: document.file.fileName,
-      id: document.id,
-      publishedAt: document.publishedAt,
-      title: document.title,
-    })),
+    documents: tenancy.lease.documents
+      .filter((document) =>
+        canViewDocument({
+          isLeaseTenant: true,
+          role: Role.tenant,
+          visibility: document.visibility,
+        }),
+      )
+      .map((document) => ({
+        fileName: document.file.fileName,
+        id: document.id,
+        publishedAt: document.publishedAt,
+        title: document.title,
+      })),
     organizationName: tenancy.lease.organization.name,
     propertyName: tenancy.lease.property.name,
     serviceCases: tenancy.lease.serviceCases.map((serviceCase) => ({

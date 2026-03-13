@@ -7,6 +7,7 @@ MietKlar ist ein produktionsnahes MVP fuer transparente Vermietung. Die Plattfor
 - Phase 1 ist abgeschlossen: Repo, Basisscaffold, Test-Setup, Dokumentation und erste Demo-Oberflaechen stehen.
 - Phase 2 ist abgeschlossen: Prisma-Domainmodell, lokale Migration, Seed-Daten und Kernlogik fuer Margin, Snapshot und Delta sind implementiert.
 - Phase 3 ist abgeschlossen: Credentials-Login, Session-Handling, Rollenwachen und geschuetzte Portalrouten sind lokal verifiziert.
+- Phase 4 ist abgeschlossen: Manager-Portal mit Objekt-/Einheitsverwaltung, Lease-Konfiguration, Kostenpositionen, Snapshot-Publishing, Servicefall-Statusupdates und Audit-Log ist implementiert.
 - GitHub-Repository: [d0npedro/mietklar](https://github.com/d0npedro/mietklar)
 - Vercel-Demo: [vermietertool.vercel.app](https://vermietertool.vercel.app)
 
@@ -80,12 +81,18 @@ Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nu
 
 - `/login`: Credentials-Login mit Demo-Zugaengen
 - `/portal`: rollengesteuerter Einstieg
-- `/portal/manager`: geschuetzte Manager-Sicht
+- `/portal/manager`: geschuetzte Manager-Sicht mit Mutationen fuer Objekte, Einheiten, Leases, Kostenpositionen, Snapshots und Servicefaelle
 - `/portal/mieter`: geschuetzte Tenant-Sicht
+
+## Teststatus
+
+- Unit-Tests decken Margin-Berechnung, Snapshot-Kalkulation, Delta-Generierung, Rollen-/Sichtbarkeitsregeln sowie Manager-Service-Flows fuer Kostenpositionen, Snapshot-Historie und Servicefall-Status ab.
+- Playwright prueft Marketing-Sichten sowie den Manager-Login bis in das geschuetzte Portal.
+- Letzter gruen verifizierter Satz: `npm run lint`, `npm run typecheck`, `npm run test:unit`, `npm run build`, `npm run test:e2e`
 
 ## Naechste Schritte
 
-- DB-Daten in geschuetzte Portale und Dashboards integrieren
-- Manager-Portal um CRUD fuer Objekte, Einheiten, Kostenpositionen und Snapshot-Publishing erweitern
-- Tenant-Portal um echte Verlaufs-, Dokumenten- und Servicefall-Flows vertiefen
+- Tenant-Portal um echte Verlaufs-, Dokumenten-, Mitteilungs- und Servicefall-Flows vertiefen
+- Tenant-seitige Meldung neuer Servicefaelle und feinere Sichtbarkeitsregeln ausbauen
+- Vercel-Deployment fuer produktive Portalnutzung mit Cloud-DB und Auth-Variablen erweitern
 - Deployment nach Auth- und Datenanbindung mit produktnahen Environment-Variablen erweitern
