@@ -6,6 +6,7 @@
     "dev": "next dev --hostname 127.0.0.1 --port 3000",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0 --port 3000",
+    "postinstall": "prisma generate",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
@@ -71,7 +72,7 @@
     "vitest": "^4.1.0"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": "24.x"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
