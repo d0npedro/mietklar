@@ -33,3 +33,7 @@ Die oeffentlichen Vorschauseiten unter `/manager` und `/mieter` bleiben fuer Mar
 ### D-008: Manager-Schreibfluesse ueber geschuetzte App-API plus Service-Schicht
 
 Die Manager-Mutationen laufen ueber geschuetzte App-API-Routen, die Auth, Zod-Validierung und eine dedizierte Service-Schicht kombinieren. So bleiben Prisma-Operationen testbar, atomare Snapshot-Veröffentlichungen sind transaktional kapselbar und das Client-Dashboard kann mit TanStack Query sauber invalidieren.
+
+### D-009: Tenant-Portal bleibt servergerendert, Servicefall-Meldung wird gezielt clientseitig erweitert
+
+Das Tenant-Portal bleibt fuer die lesenden Hauptinhalte serverseitig einfach und stabil, waehrend nur der Servicefall-Create-Flow als clientseitige Mutation ergänzt wird. Dadurch bleibt die Seite fuer Demo und SSR leichtgewichtig, waehrend ein echter schreibender Tenant-Pfad bereits vorhanden und testbar ist.

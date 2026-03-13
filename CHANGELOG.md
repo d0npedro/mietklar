@@ -4,6 +4,13 @@
 
 - Vorbereitung der MVP-Phasen 4 bis 6.
 
+## 0.1.0-alpha.5 - 2026-03-13
+
+- Tenant-Portal um Sicht auf Mietaufschluesselung, Verlauf, Dokumente, Mitteilungen und Servicefaelle erweitert.
+- Tenant-API-Route und Service-Schicht fuer neue Servicefall-Meldungen implementiert.
+- Tenant-Servicefall-Erstellung per Unit-Test abgesichert.
+- Playwright-Test fuer den geschuetzten Tenant-Login und das Mieterportal ergaenzt.
+
 ## 0.1.0-alpha.4 - 2026-03-13
 
 - Manager-Portal auf echte TanStack-Query- und API-basierte Datenfluesse umgestellt.

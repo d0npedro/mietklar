@@ -375,11 +375,11 @@ export async function getTenantPortalData(userId: string) {
             include: {
               events: {
                 orderBy: { createdAt: "desc" },
-                take: 2,
+                take: 3,
               },
             },
             orderBy: { createdAt: "desc" },
-            take: 3,
+            take: 5,
           },
           snapshots: {
             include: {
@@ -410,6 +410,7 @@ export async function getTenantPortalData(userId: string) {
 
   return {
     announcements: tenancy.lease.announcements.map((announcement) => ({
+      content: announcement.content,
       id: announcement.id,
       publishedAt: announcement.publishedAt,
       title: announcement.title,
@@ -430,6 +431,7 @@ export async function getTenantPortalData(userId: string) {
         }),
       )
       .map((document) => ({
+        description: document.description,
         fileName: document.file.fileName,
         id: document.id,
         publishedAt: document.publishedAt,
@@ -438,6 +440,9 @@ export async function getTenantPortalData(userId: string) {
     organizationName: tenancy.lease.organization.name,
     propertyName: tenancy.lease.property.name,
     serviceCases: tenancy.lease.serviceCases.map((serviceCase) => ({
+      caseNumber: serviceCase.caseNumber,
+      createdAt: serviceCase.createdAt,
+      description: serviceCase.description,
       id: serviceCase.id,
       latestEvent: serviceCase.events[0]?.detail ?? null,
       priority: serviceCase.priority,

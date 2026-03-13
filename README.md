@@ -8,6 +8,7 @@ MietKlar ist ein produktionsnahes MVP fuer transparente Vermietung. Die Plattfor
 - Phase 2 ist abgeschlossen: Prisma-Domainmodell, lokale Migration, Seed-Daten und Kernlogik fuer Margin, Snapshot und Delta sind implementiert.
 - Phase 3 ist abgeschlossen: Credentials-Login, Session-Handling, Rollenwachen und geschuetzte Portalrouten sind lokal verifiziert.
 - Phase 4 ist abgeschlossen: Manager-Portal mit Objekt-/Einheitsverwaltung, Lease-Konfiguration, Kostenpositionen, Snapshot-Publishing, Servicefall-Statusupdates und Audit-Log ist implementiert.
+- Phase 5 ist abgeschlossen: Mieterportal mit Mietaufschluesselung, Verlauf, Dokumenten, Mitteilungen und Servicefall-Meldung ist implementiert.
 - GitHub-Repository: [d0npedro/mietklar](https://github.com/d0npedro/mietklar)
 - Vercel-Demo: [vermietertool.vercel.app](https://vermietertool.vercel.app)
 
@@ -87,12 +88,13 @@ Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nu
 ## Teststatus
 
 - Unit-Tests decken Margin-Berechnung, Snapshot-Kalkulation, Delta-Generierung, Rollen-/Sichtbarkeitsregeln sowie Manager-Service-Flows fuer Kostenpositionen, Snapshot-Historie und Servicefall-Status ab.
-- Playwright prueft Marketing-Sichten sowie den Manager-Login bis in das geschuetzte Portal.
+- Unit-Tests decken zusaetzlich die Tenant-Servicefall-Erstellung ab.
+- Playwright prueft Marketing-Sichten sowie Manager- und Tenant-Login bis in die geschuetzten Portale.
 - Letzter gruen verifizierter Satz: `npm run lint`, `npm run typecheck`, `npm run test:unit`, `npm run build`, `npm run test:e2e`
 
 ## Naechste Schritte
 
-- Tenant-Portal um echte Verlaufs-, Dokumenten-, Mitteilungs- und Servicefall-Flows vertiefen
-- Tenant-seitige Meldung neuer Servicefaelle und feinere Sichtbarkeitsregeln ausbauen
+- Demo-Flows und Seed-Daten fuer Tenant- und Manager-Aktionen weiter polieren
+- Sichtbarkeitsregeln und Notification-Ausspielung weiter in Richtung produktiver Mehrmandantenfaehigkeit haerten
 - Vercel-Deployment fuer produktive Portalnutzung mit Cloud-DB und Auth-Variablen erweitern
 - Deployment nach Auth- und Datenanbindung mit produktnahen Environment-Variablen erweitern
