@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MietKlar
 
-## Getting Started
+MietKlar ist ein produktionsnahes MVP fuer transparente Vermietung. Die Plattform kombiniert ein oeffentliches SaaS-Frontend mit einem Mieterportal und einem Vermieter-/Verwalterportal. Ziel ist, Mietzusammensetzung, offene Vermietermarge, Kostenhistorie und Service-Kommunikation nachvollziehbar sichtbar zu machen.
 
-First, run the development server:
+## Status
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Phase 1 ist abgeschlossen: Repo, Basisscaffold, Test-Setup, Dokumentation und erste Demo-Oberflaechen stehen.
+- GitHub-Repository: [d0npedro/mietklar](https://github.com/d0npedro/mietklar)
+- Vercel-Demo: [vermietertool.vercel.app](https://vermietertool.vercel.app)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Geplanter Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js App Router
+- TypeScript
+- Tailwind CSS v4
+- shadcn/ui
+- Prisma + PostgreSQL
+- Auth.js
+- TanStack Query
+- React Hook Form + Zod
+- Vitest
+- Playwright
+- Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Lokales Setup
 
-## Learn More
+1. `npm install`
+2. `.env.example` nach `.env` kopieren und Werte setzen.
+3. `npm run db:start`
+4. `npm run dev`
 
-To learn more about Next.js, take a look at the following resources:
+Hinweis: In Phase 1 ist die Datenbankorchestrierung vorbereitet. Prisma-Schema, Migrationen und Seeds folgen in Phase 2.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Verfuegbare Skripte
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `npm run dev`: lokale Entwicklung auf `http://127.0.0.1:3000`
+- `npm run build`: Produktionsbuild
+- `npm run start`: Start des Produktionsservers
+- `npm run lint`: ESLint
+- `npm run typecheck`: TypeScript-Pruefung
+- `npm run format`: Prettier mit Tailwind-Sortierung
+- `npm run test`: Vitest
+- `npm run test:unit`: Vitest mit Coverage
+- `npm run test:e2e`: Playwright
+- `npm run db:start`: lokales PostgreSQL via Docker Compose starten
+- `npm run db:stop`: lokales PostgreSQL stoppen
 
-## Deploy on Vercel
+## Produktfokus
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Mandantenfaehige Organisations- und Rollenlogik
+- Transparente Mietaufschluesselung mit offener Vermietermarge
+- Historisierte Miet-Snapshots und Mietaenderungen
+- Servicefaelle mit Statusverlauf
+- Dokumente, Mitteilungen und Auditierbarkeit
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Dokumentation
+
+- [AGENTS.md](./AGENTS.md)
+- [Architektur](./docs/ARCHITECTURE.md)
+- [Roadmap](./docs/ROADMAP.md)
+- [Decision Log](./docs/DECISION_LOG.md)
+- [Changelog](./CHANGELOG.md)
+
+## Naechste Schritte
+
+- Prisma-Domainmodell und erste Migration anlegen
+- Demo-Seed-Daten fuer Manager- und Tenant-Flows aufbauen
+- Auth, Rollen und Tenant-Sichtbarkeit implementieren
+- Deployment nach Phase 2 mit echter Domainlogik und Datenbasis erweitern
