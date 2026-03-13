@@ -89,6 +89,16 @@ export default function Home() {
                   Mieter-Demo ansehen
                 </Link>
               </div>
+              <p className="text-muted-foreground mt-4 text-sm">
+                Demo-Logins fuer geschuetzte Portale unter{" "}
+                <Link
+                  className="text-primary underline-offset-4 hover:underline"
+                  href="/login"
+                >
+                  /login
+                </Link>
+                .
+              </p>
             </CardContent>
           </Card>
 

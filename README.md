@@ -6,6 +6,7 @@ MietKlar ist ein produktionsnahes MVP fuer transparente Vermietung. Die Plattfor
 
 - Phase 1 ist abgeschlossen: Repo, Basisscaffold, Test-Setup, Dokumentation und erste Demo-Oberflaechen stehen.
 - Phase 2 ist abgeschlossen: Prisma-Domainmodell, lokale Migration, Seed-Daten und Kernlogik fuer Margin, Snapshot und Delta sind implementiert.
+- Phase 3 ist abgeschlossen: Credentials-Login, Session-Handling, Rollenwachen und geschuetzte Portalrouten sind lokal verifiziert.
 - GitHub-Repository: [d0npedro/mietklar](https://github.com/d0npedro/mietklar)
 - Vercel-Demo: [vermietertool.vercel.app](https://vermietertool.vercel.app)
 
@@ -32,7 +33,7 @@ MietKlar ist ein produktionsnahes MVP fuer transparente Vermietung. Die Plattfor
 5. `npm run prisma:seed`
 6. `npm run dev`
 
-Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL nutzbar. Die oeffentliche Vercel-Demo zeigt weiterhin die statische Phase-1-Oberflaeche, bis spaetere Phasen DB-gebundene Routen und passende Produktions-Environment-Variablen nutzen.
+Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nutzbar. Die oeffentliche Vercel-Demo zeigt weiterhin die statische Vorschau; der Login-Bereich weist online transparent darauf hin, dass fuer produktive Portalnutzung spaeter `DATABASE_URL`, `NEXTAUTH_SECRET` und `NEXTAUTH_URL` in Vercel benoetigt werden.
 
 ## Verfuegbare Skripte
 
@@ -75,8 +76,16 @@ Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL nutzbar. Die oeffentlich
 - Seed-Logins: `manager@mietklar.demo / Demo12345!`, `mieter@mietklar.demo / Demo12345!`
 - Weitere Demo-User: `owner@mietklar.demo / Demo12345!`, `platform@mietklar.demo / Demo12345!`
 
+## Geschuetzte Routen
+
+- `/login`: Credentials-Login mit Demo-Zugaengen
+- `/portal`: rollengesteuerter Einstieg
+- `/portal/manager`: geschuetzte Manager-Sicht
+- `/portal/mieter`: geschuetzte Tenant-Sicht
+
 ## Naechste Schritte
 
-- Auth, Rollen und Tenant-Sichtbarkeit implementieren
 - DB-Daten in geschuetzte Portale und Dashboards integrieren
+- Manager-Portal um CRUD fuer Objekte, Einheiten, Kostenpositionen und Snapshot-Publishing erweitern
+- Tenant-Portal um echte Verlaufs-, Dokumenten- und Servicefall-Flows vertiefen
 - Deployment nach Auth- und Datenanbindung mit produktnahen Environment-Variablen erweitern

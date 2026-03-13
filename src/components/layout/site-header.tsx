@@ -8,6 +8,7 @@ const items = [
   { href: "/", label: "Produkt" },
   { href: "/manager", label: "Manager-Demo" },
   { href: "/mieter", label: "Mieter-Demo" },
+  { href: "/login", label: "Login" },
 ];
 
 type SiteHeaderProps = {

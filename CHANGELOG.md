@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-- Vorbereitung der MVP-Phasen 3 bis 6.
+- Vorbereitung der MVP-Phasen 4 bis 6.
+
+## 0.1.0-alpha.3 - 2026-03-13
+
+- Credentials-Login mit Auth.js, NextAuth-Route-Handler und JWT-Session-Strategie implementiert.
+- Session-Typen, Rollen-Helfer und Proxy-Guard fuer geschuetzte Portalrouten angelegt.
+- Geschuetzte Routen `/portal`, `/portal/manager` und `/portal/mieter` mit seed-basierten DB-Abfragen aufgebaut.
+- Login-Oberflaeche mit React Hook Form und Zod eingefuehrt.
+- Playwright-Login-Test fuer den Manager-Flow ergaenzt.
 
 ## 0.1.0-alpha.2 - 2026-03-13
 

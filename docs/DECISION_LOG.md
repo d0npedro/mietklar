@@ -21,3 +21,11 @@ Die erste online verfuegbare Demo wird bereits nach Phase 1 deployed. Dadurch bl
 ### D-005: Prisma 7 mit `prisma.config.ts` und PostgreSQL-Adapter
 
 Fuer Prisma 7 wird die Datenbankkonfiguration ueber `prisma.config.ts` gepflegt. Zur Laufzeit und fuer Seed-Skripte wird der offizielle PostgreSQL-Adapter `@prisma/adapter-pg` verwendet, damit lokale Migrationen und spaetere App-Zugriffe auf derselben technischen Basis laufen.
+
+### D-006: Auth.js mit Credentials-Provider und JWT-Sessions
+
+Fuer das MVP wird der schnellste robuste Login-Weg ueber einen Credentials-Provider mit lokal gehashten Seed-Passwoertern umgesetzt. JWT-Sessions halten das Setup schlank, waehrend Prisma weiterhin die kanonische Benutzer- und Rollenquelle bleibt.
+
+### D-007: Oeffentliche Preview und geschuetzte Portale parallel
+
+Die oeffentlichen Vorschauseiten unter `/manager` und `/mieter` bleiben fuer Marketing und Demo erhalten, waehrend die echten Portale unter `/portal/*` durch Rollen und Login geschuetzt werden. So bleibt die Online-Demo ohne Cloud-DB nutzbar, waehrend lokal bereits echte Portalfluesse getestet werden koennen.
