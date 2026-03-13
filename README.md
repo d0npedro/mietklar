@@ -9,6 +9,7 @@ MietKlar ist ein produktionsnahes MVP fuer transparente Vermietung. Die Plattfor
 - Phase 3 ist abgeschlossen: Credentials-Login, Session-Handling, Rollenwachen und geschuetzte Portalrouten sind lokal verifiziert.
 - Phase 4 ist abgeschlossen: Manager-Portal mit Objekt-/Einheitsverwaltung, Lease-Konfiguration, Kostenpositionen, Snapshot-Publishing, Servicefall-Statusupdates und Audit-Log ist implementiert.
 - Phase 5 ist abgeschlossen: Mieterportal mit Mietaufschluesselung, Verlauf, Dokumenten, Mitteilungen und Servicefall-Meldung ist implementiert.
+- Phase 6 ist abgeschlossen: E2E-Suite, Vercel-Build-Stabilisierung, Demo-Polish und offene Punkte sind dokumentiert.
 - GitHub-Repository: [d0npedro/mietklar](https://github.com/d0npedro/mietklar)
 - Vercel-Demo: [vermietertool.vercel.app](https://vermietertool.vercel.app)
 
@@ -35,7 +36,7 @@ MietKlar ist ein produktionsnahes MVP fuer transparente Vermietung. Die Plattfor
 5. `npm run prisma:seed`
 6. `npm run dev`
 
-Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nutzbar. Die oeffentliche Vercel-Demo zeigt weiterhin die statische Vorschau; der Login-Bereich weist online transparent darauf hin, dass fuer produktive Portalnutzung spaeter `DATABASE_URL`, `NEXTAUTH_SECRET` und `NEXTAUTH_URL` in Vercel benoetigt werden.
+Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nutzbar. Die oeffentliche Vercel-Demo baut wieder stabil und zeigt die Vorschau-/Portalstruktur online. Fuer produktive Online-Logins werden weiterhin `DATABASE_URL`, `NEXTAUTH_SECRET` und `NEXTAUTH_URL` in Vercel sowie eine echte Cloud-Postgres-Instanz benoetigt.
 
 ## Verfuegbare Skripte
 
@@ -85,6 +86,13 @@ Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nu
 - `/portal/manager`: geschuetzte Manager-Sicht mit Mutationen fuer Objekte, Einheiten, Leases, Kostenpositionen, Snapshots und Servicefaelle
 - `/portal/mieter`: geschuetzte Tenant-Sicht
 
+## Online-Demo
+
+- Produktions-URL: [vermietertool.vercel.app](https://vermietertool.vercel.app)
+- Letzter verifizierter produktiver Build: Commit `3defc95`
+- Aktuell online ohne Cloud-DB nutzbar: `/`, `/manager`, `/mieter`, `/login`
+- Fuer echte Online-Portal-Logins noch zu setzen: `DATABASE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`
+
 ## Teststatus
 
 - Unit-Tests decken Margin-Berechnung, Snapshot-Kalkulation, Delta-Generierung, Rollen-/Sichtbarkeitsregeln sowie Manager-Service-Flows fuer Kostenpositionen, Snapshot-Historie und Servicefall-Status ab.
@@ -92,9 +100,8 @@ Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nu
 - Playwright prueft Marketing-Sichten sowie Manager- und Tenant-Login bis in die geschuetzten Portale.
 - Letzter gruen verifizierter Satz: `npm run lint`, `npm run typecheck`, `npm run test:unit`, `npm run build`, `npm run test:e2e`
 
-## Naechste Schritte
+## Offene sinnvolle naechste Schritte
 
-- Demo-Flows und Seed-Daten fuer Tenant- und Manager-Aktionen weiter polieren
-- Sichtbarkeitsregeln und Notification-Ausspielung weiter in Richtung produktiver Mehrmandantenfaehigkeit haerten
-- Vercel-Deployment fuer produktive Portalnutzung mit Cloud-DB und Auth-Variablen erweitern
-- Deployment nach Auth- und Datenanbindung mit produktnahen Environment-Variablen erweitern
+- Cloud-Postgres anbinden und die drei Auth-/DB-Variablen in Vercel setzen, damit die Portale auch online mit Login funktionieren
+- Manager- und Tenant-Flows um echte Dokumenten-Downloads, Kommentare und feinere Notification-Ausspielung erweitern
+- Property-Assignments und Mandantenregeln weiter haerten, damit property_manager nur exakt zugewiesene Bereiche online bearbeiten koennen

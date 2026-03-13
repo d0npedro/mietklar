@@ -37,3 +37,7 @@ Die Manager-Mutationen laufen ueber geschuetzte App-API-Routen, die Auth, Zod-Va
 ### D-009: Tenant-Portal bleibt servergerendert, Servicefall-Meldung wird gezielt clientseitig erweitert
 
 Das Tenant-Portal bleibt fuer die lesenden Hauptinhalte serverseitig einfach und stabil, waehrend nur der Servicefall-Create-Flow als clientseitige Mutation ergänzt wird. Dadurch bleibt die Seite fuer Demo und SSR leichtgewichtig, waehrend ein echter schreibender Tenant-Pfad bereits vorhanden und testbar ist.
+
+### D-010: Prisma-Client wird in Cloud-Builds ueber `postinstall` generiert
+
+Die Vercel-Builds benoetigen ein garantiert erzeugtes Prisma-Client-Paket, weil Typpruefung und Seed-Dateien sonst auf unvollstaendige `@prisma/client`-Exports laufen. Deshalb wird `prisma generate` im `postinstall` verankert, statt sich auf bereits lokal generierte Artefakte zu verlassen.

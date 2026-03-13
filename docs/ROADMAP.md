@@ -7,12 +7,13 @@
 - Phase 3: Credentials-Login, Rollengrenzen, geschuetzte Portalrouten, seed-basierte Portalabfragen
 - Phase 4: Manager-Portal mit API-Mutationen, Objekt-/Einheitsverwaltung, Lease-Steuerung, Snapshot-Publishing, Servicefall-Status und Tests
 - Phase 5: Tenant-Portal mit Miettransparenz, Dokumenten, Mitteilungen, Servicefall-Meldung und Tests
+- Phase 6: E2E-Finalisierung, Demo-Polish, Vercel-Build-Fix und Restdokumentation
 
 ## Als Naechstes
 
-1. Phase 6: E2E-Finalisierung, Demo-Polish, Vercel-Deploy, Restdokumentation
-2. Cloud-DB plus produktnahe Vercel-Authentifizierung fuer den Online-Login
-3. Weitere Mandanten-, Notification- und Dokumenten-Haertung
+1. Cloud-DB plus produktnahe Vercel-Authentifizierung fuer den Online-Login
+2. Weitere Mandanten-, Notification- und Dokumenten-Haertung
+3. Download- und Kommentar-Flows fuer Dokumente und Servicefaelle
 
 ## Qualitaetsfokus
 

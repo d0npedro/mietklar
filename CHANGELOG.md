@@ -4,6 +4,12 @@
 
 - Vorbereitung der MVP-Phasen 4 bis 6.
 
+## 0.1.0-alpha.6 - 2026-03-13
+
+- Vercel-Builds durch automatisches `prisma generate` im `postinstall` stabilisiert.
+- Produktionsdeployment unter `https://vermietertool.vercel.app` wieder auf gruen gebracht.
+- README und Agenten-Dokumentation auf den abgeschlossenen MVP-Stand und die noch offenen Cloud-DB-Schritte aktualisiert.
+
 ## 0.1.0-alpha.5 - 2026-03-13
 
 - Tenant-Portal um Sicht auf Mietaufschluesselung, Verlauf, Dokumente, Mitteilungen und Servicefaelle erweitert.

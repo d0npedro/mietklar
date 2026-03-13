@@ -81,7 +81,8 @@ MietKlar ist ein mandantenfaehiges SaaS-MVP fuer transparente Vermietung. Das Pr
 3. Phase 3: abgeschlossen. Credentials-Login, Rollenwachen, Proxy-Guard und geschuetzte Portalrouten.
 4. Phase 4: abgeschlossen. Manager-Portal mit Datenabfragen, Schreiboperationen, Snapshot-Workflow, Servicefall-Bearbeitung und Tests.
 5. Phase 5: abgeschlossen. Tenant-Portal mit Miettransparenz, Dokumenten, Mitteilungen, Servicefall-Meldung und Tests.
-6. Phase 6: als naechstes. Demo-Polish, vollstaendige E2E-Abdeckung, Vercel-Finalisierung, Restdokumentation.
+6. Phase 6: abgeschlossen. Demo-Polish, vollstaendige E2E-Abdeckung, Vercel-Build-Fix und Restdokumentation.
+7. Naechste Iteration: Cloud-DB fuer Online-Login, Downloads/Kommentare, weiter gehaertete Mandanten- und Notification-Logik.
 
 ## Arbeitsmodus fuer Fortsetzung
 
