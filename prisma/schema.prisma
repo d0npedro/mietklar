@@ -1,0 +1,580 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  admin_platform
+  org_owner
+  org_manager
+  property_manager
+  tenant
+}
+
+enum MembershipStatus {
+  invited
+  active
+  suspended
+}
+
+enum OrganizationStatus {
+  active
+  archived
+}
+
+enum LeaseStatus {
+  draft
+  active
+  notice
+  ended
+}
+
+enum MarginType {
+  percentage
+  fixed
+}
+
+enum SnapshotStatus {
+  draft
+  published
+}
+
+enum ServiceCaseStatus {
+  open
+  in_progress
+  waiting_vendor
+  resolved
+  closed
+}
+
+enum ServiceCasePriority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum DocumentVisibility {
+  management
+  tenant
+  public
+}
+
+enum AnnouncementAudience {
+  management
+  tenants
+  property
+  lease
+}
+
+enum NotificationType {
+  snapshot_published
+  lease_changed
+  service_case_updated
+  document_shared
+  announcement_published
+}
+
+enum AuditAction {
+  create
+  update
+  publish
+  login
+  comment
+  status_change
+  delete
+}
+
+enum FileKind {
+  document
+  image
+  other
+}
+
+model User {
+  id                   String              @id @default(cuid())
+  email                String              @unique
+  name                 String
+  passwordHash         String?
+  image                String?
+  phone                String?
+  globalRole           Role?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  memberships          OrganizationMember[]
+  leaseTenancies       LeaseTenant[]
+  publishedSnapshots   LeaseRentSnapshot[] @relation("SnapshotPublisher")
+  publishedChanges     LeaseChange[]       @relation("ChangePublisher")
+  createdServiceCases  ServiceCase[]       @relation("ServiceCaseCreator")
+  assignedServiceCases ServiceCase[]       @relation("ServiceCaseAssignee")
+  serviceComments      ServiceCaseComment[] @relation("ServiceCaseCommentAuthor")
+  serviceEvents        ServiceCaseEvent[]  @relation("ServiceCaseEventActor")
+  uploadedFiles        File[]              @relation("FileUploader")
+  createdDocuments     Document[]          @relation("DocumentCreator")
+  publishedAnnouncements Announcement[]    @relation("AnnouncementPublisher")
+  notifications        Notification[]
+  auditLogs            AuditLog[]          @relation("AuditActor")
+  accounts             Account[]
+  sessions             Session[]
+}
+
+model Organization {
+  id                 String              @id @default(cuid())
+  name               String
+  slug               String              @unique
+  status             OrganizationStatus  @default(active)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  members            OrganizationMember[]
+  properties         Property[]
+  leases             Lease[]
+  costCategories     CostCategory[]
+  leaseChangeReasons LeaseChangeReason[]
+  files              File[]
+  documents          Document[]
+  announcements      Announcement[]
+  notifications      Notification[]
+  serviceCases       ServiceCase[]
+  auditLogs          AuditLog[]
+  snapshots          LeaseRentSnapshot[]
+  leaseChanges       LeaseChange[]
+}
+
+model OrganizationMember {
+  id                 String            @id @default(cuid())
+  organizationId     String
+  userId             String
+  role               Role
+  status             MembershipStatus  @default(active)
+  title              String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  organization       Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyAssignments PropertyAssignment[]
+
+  @@unique([organizationId, userId])
+}
+
+model PropertyAssignment {
+  id                   String             @id @default(cuid())
+  propertyId           String
+  organizationMemberId String
+  createdAt            DateTime           @default(now())
+  property             Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  organizationMember   OrganizationMember @relation(fields: [organizationMemberId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, organizationMemberId])
+}
+
+model Property {
+  id           String             @id @default(cuid())
+  organizationId String
+  code         String
+  name         String
+  addressLine1 String
+  postalCode   String
+  city         String
+  country      String             @default("DE")
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  units        Unit[]
+  leases       Lease[]
+  documents    Document[]
+  announcements Announcement[]
+  serviceCases ServiceCase[]
+  auditLogs    AuditLog[]
+  assignments  PropertyAssignment[]
+
+  @@unique([organizationId, code])
+}
+
+model Unit {
+  id           String       @id @default(cuid())
+  propertyId   String
+  code         String
+  floor        String?
+  roomCount    Int?
+  areaSqm      Decimal?     @db.Decimal(8, 2)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  property     Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  leases       Lease[]
+  documents    Document[]
+  announcements Announcement[]
+  serviceCases ServiceCase[]
+  auditLogs    AuditLog[]
+
+  @@unique([propertyId, code])
+}
+
+model Lease {
+  id            String               @id @default(cuid())
+  organizationId String
+  propertyId    String
+  unitId        String
+  reference     String
+  status        LeaseStatus          @default(draft)
+  startDate     DateTime
+  endDate       DateTime?
+  currency      String               @default("EUR")
+  billingDay    Int                  @default(1)
+  marginType    MarginType           @default(percentage)
+  marginValue   Decimal              @db.Decimal(10, 2)
+  notes         String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  organization  Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  property      Property             @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit          Unit                 @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  tenants       LeaseTenant[]
+  costItems     LeaseCostItem[]
+  snapshots     LeaseRentSnapshot[]
+  changes       LeaseChange[]
+  serviceCases  ServiceCase[]
+  documents     Document[]
+  announcements Announcement[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+
+  @@unique([organizationId, reference])
+}
+
+model LeaseTenant {
+  id         String    @id @default(cuid())
+  leaseId     String
+  userId      String
+  isPrimary   Boolean   @default(false)
+  moveInDate  DateTime
+  moveOutDate DateTime?
+  createdAt   DateTime  @default(now())
+  lease       Lease     @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([leaseId, userId])
+}
+
+model CostCategory {
+  id            String                  @id @default(cuid())
+  organizationId String
+  key           String
+  name          String
+  description   String?
+  isExternal    Boolean                 @default(true)
+  sortOrder     Int                     @default(0)
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+  organization  Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  costItems     LeaseCostItem[]
+  snapshotItems LeaseRentSnapshotItem[]
+
+  @@unique([organizationId, key])
+}
+
+model LeaseCostItem {
+  id             String                  @id @default(cuid())
+  leaseId        String
+  costCategoryId String
+  label          String
+  amount         Decimal                 @db.Decimal(12, 2)
+  isExternal     Boolean                 @default(true)
+  effectiveFrom  DateTime
+  effectiveTo    DateTime?
+  note           String?
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  lease          Lease                   @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  costCategory   CostCategory            @relation(fields: [costCategoryId], references: [id], onDelete: Restrict)
+  snapshotItems  LeaseRentSnapshotItem[] @relation("SnapshotItemSource")
+
+  @@index([leaseId, effectiveFrom])
+}
+
+model LeaseRentSnapshot {
+  id                 String                  @id @default(cuid())
+  organizationId     String
+  leaseId            String
+  version            Int
+  status             SnapshotStatus          @default(draft)
+  effectiveDate      DateTime
+  currency           String                  @default("EUR")
+  costTotal          Decimal                 @db.Decimal(12, 2)
+  marginAmount       Decimal                 @db.Decimal(12, 2)
+  rentTotal          Decimal                 @db.Decimal(12, 2)
+  summary            String?
+  createdAt          DateTime                @default(now())
+  publishedAt        DateTime?
+  publishedById      String?
+  organization       Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lease              Lease                   @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  publishedBy        User?                   @relation("SnapshotPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  items              LeaseRentSnapshotItem[]
+  changes            LeaseChange[]           @relation("ChangeSnapshot")
+  previousChanges    LeaseChange[]           @relation("PreviousSnapshot")
+  auditLogs          AuditLog[]
+
+  @@unique([leaseId, version])
+}
+
+model LeaseRentSnapshotItem {
+  id             String            @id @default(cuid())
+  snapshotId      String
+  costCategoryId  String?
+  sourceCostItemId String?
+  label          String
+  amount         Decimal           @db.Decimal(12, 2)
+  sharePercent   Decimal?          @db.Decimal(5, 2)
+  isExternal     Boolean           @default(true)
+  isMargin       Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  snapshot       LeaseRentSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  costCategory   CostCategory?     @relation(fields: [costCategoryId], references: [id], onDelete: SetNull)
+  sourceCostItem LeaseCostItem?    @relation("SnapshotItemSource", fields: [sourceCostItemId], references: [id], onDelete: SetNull)
+}
+
+model LeaseChangeReason {
+  id             String         @id @default(cuid())
+  organizationId String
+  code           String
+  label          String
+  description    String?
+  createdAt      DateTime       @default(now())
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  changes        LeaseChange[]
+
+  @@unique([organizationId, code])
+}
+
+model LeaseChange {
+  id               String             @id @default(cuid())
+  organizationId   String
+  leaseId          String
+  snapshotId       String
+  previousSnapshotId String?
+  reasonId         String
+  title            String
+  description      String
+  deltaAmount      Decimal            @db.Decimal(12, 2)
+  effectiveDate    DateTime
+  publishedAt      DateTime           @default(now())
+  publishedById    String?
+  createdAt        DateTime           @default(now())
+  organization     Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lease            Lease              @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  snapshot         LeaseRentSnapshot  @relation("ChangeSnapshot", fields: [snapshotId], references: [id], onDelete: Cascade)
+  previousSnapshot LeaseRentSnapshot? @relation("PreviousSnapshot", fields: [previousSnapshotId], references: [id], onDelete: SetNull)
+  reason           LeaseChangeReason  @relation(fields: [reasonId], references: [id], onDelete: Restrict)
+  publishedBy      User?              @relation("ChangePublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  notifications    Notification[]
+
+  @@index([leaseId, effectiveDate])
+}
+
+model ServiceCase {
+  id             String             @id @default(cuid())
+  organizationId String
+  propertyId     String
+  unitId         String
+  leaseId        String?
+  caseNumber     String
+  title          String
+  description    String
+  status         ServiceCaseStatus  @default(open)
+  priority       ServiceCasePriority @default(medium)
+  createdById    String
+  assignedToId   String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  resolvedAt     DateTime?
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  property       Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit           Unit               @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  lease          Lease?             @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  createdBy      User               @relation("ServiceCaseCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  assignedTo     User?              @relation("ServiceCaseAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  comments       ServiceCaseComment[]
+  events         ServiceCaseEvent[]
+  notifications  Notification[]
+  auditLogs      AuditLog[]
+
+  @@unique([organizationId, caseNumber])
+}
+
+model ServiceCaseComment {
+  id            String      @id @default(cuid())
+  serviceCaseId String
+  authorId      String
+  body          String
+  isInternal    Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  serviceCase   ServiceCase @relation(fields: [serviceCaseId], references: [id], onDelete: Cascade)
+  author        User        @relation("ServiceCaseCommentAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+}
+
+model ServiceCaseEvent {
+  id            String             @id @default(cuid())
+  serviceCaseId String
+  actorId       String?
+  type          String
+  fromStatus    ServiceCaseStatus?
+  toStatus      ServiceCaseStatus?
+  detail        String?
+  createdAt     DateTime           @default(now())
+  serviceCase   ServiceCase        @relation(fields: [serviceCaseId], references: [id], onDelete: Cascade)
+  actor         User?              @relation("ServiceCaseEventActor", fields: [actorId], references: [id], onDelete: SetNull)
+}
+
+model File {
+  id             String       @id @default(cuid())
+  organizationId String
+  kind           FileKind     @default(document)
+  storageKey     String       @unique
+  fileName       String
+  mimeType       String
+  sizeBytes      Int
+  uploadedById   String?
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  uploadedBy     User?        @relation("FileUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  document       Document?
+}
+
+model Document {
+  id             String             @id @default(cuid())
+  organizationId String
+  fileId         String             @unique
+  propertyId     String?
+  unitId         String?
+  leaseId        String?
+  createdById    String?
+  title          String
+  description    String?
+  visibility     DocumentVisibility @default(management)
+  publishedAt    DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  file           File               @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  property       Property?          @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  unit           Unit?              @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  lease          Lease?             @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  createdBy      User?              @relation("DocumentCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  notifications  Notification[]
+  auditLogs      AuditLog[]
+}
+
+model Announcement {
+  id             String               @id @default(cuid())
+  organizationId String
+  propertyId     String?
+  unitId         String?
+  leaseId        String?
+  title          String
+  content        String
+  audience       AnnouncementAudience
+  publishedAt    DateTime
+  publishedById  String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  property       Property?            @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  unit           Unit?                @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  lease          Lease?               @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  publishedBy    User?                @relation("AnnouncementPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  notifications  Notification[]
+  auditLogs      AuditLog[]
+}
+
+model Notification {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String
+  leaseId        String?
+  serviceCaseId  String?
+  documentId     String?
+  announcementId String?
+  leaseChangeId  String?
+  type           NotificationType
+  title          String
+  body           String
+  linkPath       String?
+  readAt         DateTime?
+  createdAt      DateTime         @default(now())
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lease          Lease?           @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  serviceCase    ServiceCase?     @relation(fields: [serviceCaseId], references: [id], onDelete: SetNull)
+  document       Document?        @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  announcement   Announcement?    @relation(fields: [announcementId], references: [id], onDelete: SetNull)
+  leaseChange    LeaseChange?     @relation(fields: [leaseChangeId], references: [id], onDelete: SetNull)
+
+  @@index([userId, readAt])
+}
+
+model AuditLog {
+  id             String            @id @default(cuid())
+  organizationId String?
+  actorId        String?
+  propertyId     String?
+  unitId         String?
+  leaseId        String?
+  snapshotId     String?
+  serviceCaseId  String?
+  documentId     String?
+  announcementId String?
+  action         AuditAction
+  entityType     String
+  entityId       String
+  summary        String
+  metadata       Json?
+  createdAt      DateTime          @default(now())
+  organization   Organization?     @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  actor          User?             @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  property       Property?         @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  unit           Unit?             @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  lease          Lease?            @relation(fields: [leaseId], references: [id], onDelete: SetNull)
+  snapshot       LeaseRentSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+  serviceCase    ServiceCase?      @relation(fields: [serviceCaseId], references: [id], onDelete: SetNull)
+  document       Document?         @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  announcement   Announcement?     @relation(fields: [announcementId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

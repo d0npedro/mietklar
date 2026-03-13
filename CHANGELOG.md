@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-- Vorbereitung der MVP-Phasen 2 bis 6.
+- Vorbereitung der MVP-Phasen 3 bis 6.
+
+## 0.1.0-alpha.2 - 2026-03-13
+
+- Vollstaendiges Prisma-Domainmodell fuer Rollen, Organisationen, Objekte, Leases, Kosten, Snapshots, Servicefaelle, Dokumente, Mitteilungen und Audit-Logs angelegt.
+- Erste PostgreSQL-Migration fuer das MVP-Schema erzeugt und lokal angewendet.
+- Seed-Daten fuer Demo-Organisation, mehrere Einheiten, Lease, veroeffentlichte Snapshots, Mietaenderung, Servicefall, Dokumente und Mitteilung angelegt.
+- Kernlogik fuer Margin-Berechnung, Snapshot-Kalkulation und Delta-Ermittlung implementiert und per Unit-Tests abgesichert.
+- Prisma-7-Konfiguration mit `prisma.config.ts` und PostgreSQL-Adapter fuer Laufzeit und Seeds eingerichtet.
 
 ## 0.1.0-alpha.1 - 2026-03-13
 

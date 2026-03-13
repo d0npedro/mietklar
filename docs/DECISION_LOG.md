@@ -17,3 +17,7 @@ Docker ist im Workspace verfuegbar. Deshalb wird lokale Entwicklung und Testvorb
 ### D-004: Frueher Vercel-Deploy vor Domainlogik
 
 Die erste online verfuegbare Demo wird bereits nach Phase 1 deployed. Dadurch bleiben Routing, UI-Richtung und Build-Pipeline frueh ueberpruefbar, waehrend Prisma, Auth und echte Mandantenlogik in den naechsten Phasen hinzukommen.
+
+### D-005: Prisma 7 mit `prisma.config.ts` und PostgreSQL-Adapter
+
+Fuer Prisma 7 wird die Datenbankkonfiguration ueber `prisma.config.ts` gepflegt. Zur Laufzeit und fuer Seed-Skripte wird der offizielle PostgreSQL-Adapter `@prisma/adapter-pg` verwendet, damit lokale Migrationen und spaetere App-Zugriffe auf derselben technischen Basis laufen.
