@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
+import { demoAccounts } from "@/lib/demo-accounts";
 import type { LoginInput } from "@/lib/validation/auth";
 import { loginSchema } from "@/lib/validation/auth";
 
@@ -18,23 +19,6 @@ import { Label } from "@/components/ui/label";
 type LoginFormProps = {
   callbackUrl: string;
 };
-
-const demoAccounts = [
-  {
-    description: "Objekte, Mieten und Service bearbeiten",
-    email: "manager@mietklar.demo",
-    icon: Building2,
-    label: "Als Verwalter testen",
-    password: "Demo12345!",
-  },
-  {
-    description: "Miete, Dokumente und Service sehen",
-    email: "mieter@mietklar.demo",
-    icon: Home,
-    label: "Als Mieter testen",
-    password: "Demo12345!",
-  },
-] as const;
 
 export function LoginForm({ callbackUrl }: LoginFormProps) {
   const router = useRouter();
@@ -83,7 +67,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
     >
       <div className="space-y-3">
         {demoAccounts.map((account) => {
-          const Icon = account.icon;
+          const Icon = account.role === "manager" ? Building2 : Home;
 
           return (
             <Button
@@ -95,7 +79,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
                 startTransition(async () => {
                   await authenticate({
                     email: account.email,
-                    password: account.password,
+                    password: "Demo12345!",
                   });
                 });
               }}
@@ -107,7 +91,9 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
                   <Icon className="size-5" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-base font-semibold">{account.label}</p>
+                  <p className="text-base font-semibold">
+                    {account.loginLabel}
+                  </p>
                   <p className="text-sm font-normal text-slate-600">
                     {account.description}
                   </p>

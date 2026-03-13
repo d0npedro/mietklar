@@ -13,6 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
+import {
+  demoAccounts,
+  getRecommendedDemoRole,
+} from "@/lib/demo-accounts";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +42,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   }
 
   const callbackUrl = params.next ?? "/portal";
+  const recommendedDemoRole = getRecommendedDemoRole(callbackUrl);
 
   // UX-Grund: Login startet mit einer einfachen Rollenwahl und zeigt Demo-Zugaenge direkt am Ort der Entscheidung.
   return (
@@ -60,19 +65,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          {[
-            {
-              email: "manager@mietklar.demo",
-              icon: Building2,
-              label: "Verwaltung",
-            },
-            {
-              email: "mieter@mietklar.demo",
-              icon: Home,
-              label: "Mieter",
-            },
-          ].map((account) => {
-            const Icon = account.icon;
+          {demoAccounts.map((account) => {
+            const Icon = account.role === "manager" ? Building2 : Home;
 
             return (
               <Card key={account.email} className="app-panel bg-white">
@@ -81,7 +75,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                     <Icon className="size-5" />
                   </div>
                   <div>
-                    <CardDescription>{account.label}</CardDescription>
+                    <CardDescription>
+                      {account.role === "manager" ? "Verwaltung" : "Mieter"}
+                    </CardDescription>
                     <CardTitle className="text-lg">{account.email}</CardTitle>
                   </div>
                 </CardHeader>
@@ -130,18 +126,58 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <p className="leading-6">
                 Lokal funktioniert der Login mit den Seed-Daten bereits. Fuer
                 die Live-Demo fehlen noch die benoetigten Vercel-Variablen fuer
-                Datenbank und Auth.
+                Datenbank und Auth. Bis dahin fuehren die Demo-Buttons direkt in
+                die passende Ansicht.
               </p>
-              <Link
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "min-h-12 rounded-2xl bg-white px-4 text-base",
-                )}
-                href="/"
-              >
-                Zur Startseite
-                <ArrowRight className="size-4" />
-              </Link>
+              <div className="space-y-3">
+                {demoAccounts.map((account) => {
+                  const Icon = account.role === "manager" ? Building2 : Home;
+                  const isRecommended = account.role === recommendedDemoRole;
+
+                  return (
+                    <Link
+                      key={account.email}
+                      className={cn(
+                        buttonVariants({
+                          variant: isRecommended ? "default" : "outline",
+                        }),
+                        "flex min-h-16 w-full items-center justify-between rounded-[1.5rem] px-4 py-4 text-left text-base",
+                        !isRecommended && "bg-white",
+                      )}
+                      href={account.previewHref}
+                    >
+                      <span className="flex items-center gap-3">
+                        <span
+                          className={cn(
+                            "flex size-11 items-center justify-center rounded-2xl",
+                            isRecommended
+                              ? "bg-white/15 text-white"
+                              : "bg-slate-100 text-slate-700",
+                          )}
+                        >
+                          <Icon className="size-5" />
+                        </span>
+                        <span className="space-y-1">
+                          <span className="block font-semibold">
+                            {account.previewLabel}
+                          </span>
+                          <span
+                            className={cn(
+                              "block text-sm",
+                              isRecommended
+                                ? "text-white/80"
+                                : "text-slate-600",
+                            )}
+                          >
+                            {account.description}
+                          </span>
+                        </span>
+                      </span>
+                      <ArrowRight className="size-4 shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           )}
         </CardContent>

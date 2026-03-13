@@ -82,7 +82,7 @@ Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nu
 
 ## Geschuetzte Routen
 
-- `/login`: Credentials-Login mit Direktwahl fuer Demo-Manager und Demo-Mieter
+- `/login`: Credentials-Login mit Direktwahl fuer Demo-Manager und Demo-Mieter; ohne Live-Auth fuehren die Buttons direkt in die passende oeffentliche Demoansicht
 - `/portal`: rollengesteuerter Einstieg
 - `/portal/manager`: geschuetzte Manager-Sicht mit Mutationen fuer Objekte, Einheiten, Leases, Kostenpositionen, Snapshots und Servicefaelle
 - `/portal/mieter`: geschuetzte Tenant-Sicht

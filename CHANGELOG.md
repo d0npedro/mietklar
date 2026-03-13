@@ -7,6 +7,7 @@
 ## 0.1.0-alpha.8 - 2026-03-13
 
 - Login-Seite auf Vercel gegen fehlende Auth-/DB-Variablen gehaertet, damit die Fallback-Ansicht statt eines Serverfehlers gerendert wird.
+- Demo-Buttons auf der Login-Seite fuehren nun ohne Live-Auth direkt in die passende oeffentliche Demoansicht und nutzen mit aktiver Auth weiterhin Auto-Login.
 
 ## 0.1.0-alpha.7 - 2026-03-13
 
