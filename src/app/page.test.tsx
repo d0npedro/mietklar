@@ -8,15 +8,19 @@ describe("Landing page", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /jede miete\. jeder kostenblock\. jede aenderung offen erklaert\./i,
+        name: /was moechten sie heute sehen\?/i,
       }),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole("link", { name: /manager-demo ansehen/i }),
+      screen.getByRole("link", {
+        name: /ich verwalte wohnungen.*bestand pflegen/i,
+      }),
     ).toHaveAttribute("href", "/manager");
     expect(
-      screen.getByRole("link", { name: /mieter-demo ansehen/i }),
+      screen.getByRole("link", {
+        name: /ich wohne hier.*mietaufschluesselung/i,
+      }),
     ).toHaveAttribute("href", "/mieter");
   });
 });

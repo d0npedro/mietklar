@@ -41,3 +41,7 @@ Das Tenant-Portal bleibt fuer die lesenden Hauptinhalte serverseitig einfach und
 ### D-010: Prisma-Client wird in Cloud-Builds ueber `postinstall` generiert
 
 Die Vercel-Builds benoetigen ein garantiert erzeugtes Prisma-Client-Paket, weil Typpruefung und Seed-Dateien sonst auf unvollstaendige `@prisma/client`-Exports laufen. Deshalb wird `prisma generate` im `postinstall` verankert, statt sich auf bereits lokal generierte Artefakte zu verlassen.
+
+### D-011: Frontend wird UX-zentriert vereinfacht, ohne die Domainlogik anzutasten
+
+Die bestehende Produktlogik bleibt stabil, aber Landing, Login und Portale werden auf eine klarere mobile-first Informationsarchitektur umgebaut. Statt mehr Fachsprache oder dichter Dashboard-Flaechen priorisiert MietKlar ab jetzt eine einfache Rollenwahl, grosse Touch-Ziele, schrittweise Formulare und direktes Feedback in Alltagssprache.

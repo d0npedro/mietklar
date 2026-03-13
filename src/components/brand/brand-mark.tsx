@@ -6,26 +6,28 @@ type BrandMarkProps = {
 };
 
 export function BrandMark({ compact = false, className }: BrandMarkProps) {
+  // UX-Grund: Eine klare Wortmarke mit Buchstaben ist leichter wiederzuerkennen als ein abstraktes Symbol.
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <div className="bg-primary text-primary-foreground shadow-primary/20 flex size-11 items-center justify-center rounded-[1.15rem] shadow-lg">
-        <div className="grid grid-cols-2 gap-1">
-          <span className="h-3 w-1.5 rounded-full bg-current opacity-90" />
-          <span className="h-5 w-1.5 rounded-full bg-current" />
-          <span className="h-5 w-1.5 rounded-full bg-current" />
-          <span className="h-3 w-1.5 rounded-full bg-current opacity-90" />
-        </div>
+      <div className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-[1.15rem] shadow-sm shadow-slate-900/10">
+        <span className="font-display text-lg font-semibold tracking-tight">
+          MK
+        </span>
       </div>
-      {!compact ? (
-        <div className="space-y-0.5">
+      {compact ? (
+        <p className="font-display text-lg font-semibold tracking-tight text-slate-950">
+          MietKlar
+        </p>
+      ) : (
+        <div className="space-y-0.5 leading-tight">
           <p className="font-display text-lg font-semibold tracking-tight text-slate-950">
             MietKlar
           </p>
           <p className="text-muted-foreground text-xs">
-            Transparente Vermietung
+            Miete verstehen. Wohnungen klar verwalten.
           </p>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

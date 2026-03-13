@@ -8,6 +8,7 @@
 - Phase 4: Manager-Portal mit API-Mutationen, Objekt-/Einheitsverwaltung, Lease-Steuerung, Snapshot-Publishing, Servicefall-Status und Tests
 - Phase 5: Tenant-Portal mit Miettransparenz, Dokumenten, Mitteilungen, Servicefall-Meldung und Tests
 - Phase 6: E2E-Finalisierung, Demo-Polish, Vercel-Build-Fix und Restdokumentation
+- UX-Refresh: Landing, Login sowie beide Portale auf klarere mobile-first Nutzerfuehrung umgestellt
 
 ## Als Naechstes
 

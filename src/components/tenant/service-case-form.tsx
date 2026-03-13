@@ -16,7 +16,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 const selectClassName =
-  "border-input focus-visible:border-ring focus-visible:ring-ring/50 h-11 w-full rounded-lg border bg-transparent px-3 text-sm outline-none focus-visible:ring-3";
+  "border-input focus-visible:border-ring focus-visible:ring-ring/50 h-12 w-full rounded-2xl border bg-transparent px-4 text-base outline-none focus-visible:ring-3";
+
+const priorityOptions = [
+  { label: "Niedrig", value: "low" },
+  { label: "Mittel", value: "medium" },
+  { label: "Hoch", value: "high" },
+  { label: "Sofort", value: "urgent" },
+] as const;
 
 async function submitServiceCase(input: unknown) {
   const response = await fetch("/api/tenant/service-cases", {
@@ -64,9 +71,10 @@ export function TenantServiceCaseForm() {
     },
   });
 
+  // UX-Grund: Das Formular verwendet Alltagssprache und grosse Touch-Ziele, damit Mieter ihr Problem ohne Fachwissen erfassen koennen.
   return (
     <form
-      className="space-y-4"
+      className="space-y-5"
       onSubmit={form.handleSubmit((values) => {
         setFeedback({ error: null, message: null });
         mutation.mutate(values);
@@ -83,34 +91,46 @@ export function TenantServiceCaseForm() {
       ) : null}
 
       <div className="space-y-2">
-        <Label htmlFor="tenant-case-title">Titel</Label>
-        <Input id="tenant-case-title" {...form.register("title")} />
+        <Label htmlFor="tenant-case-title">Worum geht es?</Label>
+        <Input
+          className="h-12 rounded-2xl px-4 text-base"
+          id="tenant-case-title"
+          placeholder="Zum Beispiel: Heizung wird nicht warm"
+          {...form.register("title")}
+        />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="tenant-case-priority">Prioritaet</Label>
+        <Label htmlFor="tenant-case-priority">Wie dringend ist es?</Label>
         <select
           className={selectClassName}
           id="tenant-case-priority"
           {...form.register("priority")}
         >
-          <option value="low">low</option>
-          <option value="medium">medium</option>
-          <option value="high">high</option>
-          <option value="urgent">urgent</option>
+          {priorityOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="tenant-case-description">Beschreibung</Label>
+        <Label htmlFor="tenant-case-description">Was ist passiert?</Label>
         <Textarea
+          className="min-h-32 rounded-3xl px-4 py-3 text-base"
           id="tenant-case-description"
+          placeholder="Beschreiben Sie kurz, was nicht funktioniert und seit wann es auffaellt."
           rows={5}
           {...form.register("description")}
         />
       </div>
 
-      <Button className="h-11 rounded-full" disabled={mutation.isPending} type="submit">
+      <Button
+        className="h-12 w-full rounded-[1.5rem] text-base font-semibold"
+        disabled={mutation.isPending}
+        type="submit"
+      >
         {mutation.isPending ? "Sende..." : "Servicefall melden"}
       </Button>
     </form>

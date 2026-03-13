@@ -10,6 +10,7 @@ MietKlar ist ein produktionsnahes MVP fuer transparente Vermietung. Die Plattfor
 - Phase 4 ist abgeschlossen: Manager-Portal mit Objekt-/Einheitsverwaltung, Lease-Konfiguration, Kostenpositionen, Snapshot-Publishing, Servicefall-Statusupdates und Audit-Log ist implementiert.
 - Phase 5 ist abgeschlossen: Mieterportal mit Mietaufschluesselung, Verlauf, Dokumenten, Mitteilungen und Servicefall-Meldung ist implementiert.
 - Phase 6 ist abgeschlossen: E2E-Suite, Vercel-Build-Stabilisierung, Demo-Polish und offene Punkte sind dokumentiert.
+- Frontend-Refresh 2026-03-13: Landing, Login, Vorschauseiten und beide Portale wurden auf eine einfachere mobile-first UX mit klareren Entscheidungen, groesseren Touch-Zielen und direkterem Demo-Login umgebaut.
 - GitHub-Repository: [d0npedro/mietklar](https://github.com/d0npedro/mietklar)
 - Vercel-Demo: [vermietertool.vercel.app](https://vermietertool.vercel.app)
 
@@ -81,7 +82,7 @@ Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nu
 
 ## Geschuetzte Routen
 
-- `/login`: Credentials-Login mit Demo-Zugaengen
+- `/login`: Credentials-Login mit Direktwahl fuer Demo-Manager und Demo-Mieter
 - `/portal`: rollengesteuerter Einstieg
 - `/portal/manager`: geschuetzte Manager-Sicht mit Mutationen fuer Objekte, Einheiten, Leases, Kostenpositionen, Snapshots und Servicefaelle
 - `/portal/mieter`: geschuetzte Tenant-Sicht
@@ -97,7 +98,7 @@ Hinweis: Das Repo ist aktuell lokal voll mit PostgreSQL und Credentials-Login nu
 
 - Unit-Tests decken Margin-Berechnung, Snapshot-Kalkulation, Delta-Generierung, Rollen-/Sichtbarkeitsregeln sowie Manager-Service-Flows fuer Kostenpositionen, Snapshot-Historie und Servicefall-Status ab.
 - Unit-Tests decken zusaetzlich die Tenant-Servicefall-Erstellung ab.
-- Playwright prueft Marketing-Sichten sowie Manager- und Tenant-Login bis in die geschuetzten Portale.
+- Playwright prueft die neue Einstiegsnavigation sowie Manager- und Tenant-Login bis in die geschuetzten Portale.
 - Letzter gruen verifizierter Satz: `npm run lint`, `npm run typecheck`, `npm run test:unit`, `npm run build`, `npm run test:e2e`
 
 ## Offene sinnvolle naechste Schritte

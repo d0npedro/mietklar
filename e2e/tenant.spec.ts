@@ -5,15 +5,13 @@ test("tenant can sign in and view the protected tenant portal", async ({
 }) => {
   await page.goto("/login");
 
-  await page.getByLabel("E-Mail").fill("mieter@mietklar.demo");
-  await page.getByLabel("Passwort").fill("Demo12345!");
-  await page.getByRole("button", { name: /anmelden/i }).click();
+  await page.getByRole("button", { name: /als mieter testen/i }).click();
 
   await expect(page).toHaveURL(/\/portal\/mieter$/);
   await expect(
     page.getByRole("heading", {
-      name: /mieterportal/i,
+      name: /mein zuhause/i,
     }),
   ).toBeVisible();
-  await expect(page.getByText(/aktuelle warmmiete/i)).toBeVisible();
+  await expect(page.getByText(/meine aktuelle miete/i)).toBeVisible();
 });

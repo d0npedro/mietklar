@@ -35,6 +35,8 @@ MietKlar ist ein mandantenfaehiges SaaS-MVP fuer transparente Vermietung. Das Pr
 - Serverlogik in `src/lib` oder dedizierten Servermodulen kapseln, UI-Komponenten praesentationsorientiert halten.
 - Deutsche Klartextlabels in der UI, englische technische Bezeichner im Code.
 - Bestehende Patterns erweitern statt parallele Abstraktionen einzufuehren.
+- Neue Frontend-Komponenten mit einer knappen `// UX-Grund:`-Kommentarzeile versehen, wenn die Interaktionsentscheidung sonst nicht sofort klar ist.
+- In Nutzerscreens moeglichst nur eine primaere Handlung pro sichtbarem Bereich anbieten.
 - Nur ASCII in manuell erstellten Dateien verwenden.
 
 ## Test-Standards
@@ -82,7 +84,8 @@ MietKlar ist ein mandantenfaehiges SaaS-MVP fuer transparente Vermietung. Das Pr
 4. Phase 4: abgeschlossen. Manager-Portal mit Datenabfragen, Schreiboperationen, Snapshot-Workflow, Servicefall-Bearbeitung und Tests.
 5. Phase 5: abgeschlossen. Tenant-Portal mit Miettransparenz, Dokumenten, Mitteilungen, Servicefall-Meldung und Tests.
 6. Phase 6: abgeschlossen. Demo-Polish, vollstaendige E2E-Abdeckung, Vercel-Build-Fix und Restdokumentation.
-7. Naechste Iteration: Cloud-DB fuer Online-Login, Downloads/Kommentare, weiter gehaertete Mandanten- und Notification-Logik.
+7. UX-Refresh: abgeschlossen. Landing, Login und beide Portale wurden auf klarere mobile-first Nutzerfuehrung umgebaut.
+8. Naechste Iteration: Cloud-DB fuer Online-Login, Downloads/Kommentare, weiter gehaertete Mandanten- und Notification-Logik.
 
 ## Arbeitsmodus fuer Fortsetzung
 

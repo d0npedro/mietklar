@@ -4,6 +4,12 @@
 
 - Vorbereitung der MVP-Phasen 4 bis 6.
 
+## 0.1.0-alpha.7 - 2026-03-13
+
+- Landingpage, Login und die oeffentlichen Vorschauseiten in eine einfachere rollenbasierte Einstiegsarchitektur ueberfuehrt.
+- Manager- und Tenant-Portal visuell und strukturell neu aufgebaut: klarere Schrittfolge, groessere Touch-Ziele, einfachere Sprache und direkteres Feedback.
+- Playwright- und Landing-Unit-Tests auf die neue UX-Fuehrung aktualisiert und erneut gruen verifiziert.
+
 ## 0.1.0-alpha.6 - 2026-03-13
 
 - Vercel-Builds durch automatisches `prisma generate` im `postinstall` stabilisiert.
