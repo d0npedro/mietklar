@@ -24,14 +24,17 @@ type LoginPageProps = {
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const session = await auth();
   const params = await searchParams;
   const authReady = Boolean(
     process.env.DATABASE_URL && process.env.NEXTAUTH_SECRET,
   );
 
-  if (session?.user?.id) {
-    redirect("/portal");
+  if (authReady) {
+    const session = await auth();
+
+    if (session?.user?.id) {
+      redirect("/portal");
+    }
   }
 
   const callbackUrl = params.next ?? "/portal";

@@ -4,6 +4,10 @@
 
 - Vorbereitung der MVP-Phasen 4 bis 6.
 
+## 0.1.0-alpha.8 - 2026-03-13
+
+- Login-Seite auf Vercel gegen fehlende Auth-/DB-Variablen gehaertet, damit die Fallback-Ansicht statt eines Serverfehlers gerendert wird.
+
 ## 0.1.0-alpha.7 - 2026-03-13
 
 - Landingpage, Login und die oeffentlichen Vorschauseiten in eine einfachere rollenbasierte Einstiegsarchitektur ueberfuehrt.
